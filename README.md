@@ -21,7 +21,7 @@
 * no need to: create objects, use scope, catch or throw exceptions
 * simple syntax, all commands started with `TEST_`
 * allows write tests in natural way, no need to build special constructions 
-* implementation has sparated logic from printing logs (allows to change output easily)
+* implementation has separated logic from printing logs (allows to change output easily)
 * output to console by default
 
 ### Requiements:
@@ -81,7 +81,7 @@ int main()
 
 `X` - test expression
 
-This is basic testing command. It defines a test, converts `X` to `bool` ans checks if is `true`. When test fails it prints to the output: file name, line number and `X` as string. Passed and failed test are also counted.
+This is basic testing command. It defines a test, converts `X` to `bool` ans checks if is `true`. When test fails it prints to the output: file name, line number and `X` as string. Passed and failed tests are also counted.
 
 Example:
 
@@ -153,7 +153,7 @@ TEST_MERGE(...
 
 `X` - group name
 
-Create a test group named `X`. It also prints to the output summary of previous group (all and failed test count) and the name of the curret group.
+Create a test group named `X`. It also prints to the output summary of previous group (all and failed test count) and the name of the current group.
 
 * Group ends when a new one begins or program reach test summary commands.
 * Group summary is printed at the end of the group.
@@ -191,7 +191,7 @@ void test_sub()
 
 Use at the end of `try` block that contain your tests. You will get here overall testing summary with total and failed test count.
 
-This comment is required.
+This command is required.
 
 Example:
 ```
@@ -211,7 +211,7 @@ catch(...)
 
 Use in `catch` block atfer your tests, to get informed if they were interrupted by an uncaught exception. You will get file name and line number of the last test before an exception was thrown.
 
-This comment is required.
+This command is required.
 
 Example:
 ```
@@ -238,7 +238,7 @@ In `TEST_SUMMARY` and `TEST_EXCEPTION` commands all test counts (total, failed a
 
 `X` - message to be printed
 
-Print to the output custom message.
+Print to the output a custom message.
 
 Example:
 ```
@@ -249,7 +249,7 @@ TEST_PRINT(" [preparing data]");
 
 ### `TEST_FAILED`
 
-Check if anny of the test failed. Use before `TEST_SUMMARY`.
+Check if anny of the tests has failed. Use before `TEST_SUMMARY`.
 
 Example:
 ```
@@ -269,7 +269,7 @@ return TEST_FAILED;
 
 `X` - `true` or `false`
 
-Enable or disable program exit in `TEST_SUMMARY;` and `TEST_EXCEPTION;`. When is enabled and there was a failed test or an exception `exit(EXIT_FAILURE)` will be called. 
+Enable or disable program exit in `TEST_SUMMARY` and `TEST_EXCEPTION`. When is enabled and there was a failed test or an exception `exit(EXIT_FAILURE)` will be called. 
 
 By default is set to `true`.
 
