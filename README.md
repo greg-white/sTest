@@ -1,5 +1,10 @@
-# sTest - unit testing framework for C++
+# sTest - The C++ unit testing framework.
 
+![](https://img.shields.io/badge/version-1.0-blue.svg)
+![](https://img.shields.io/badge/language-C%2B%2B-blue.svg)
+![](https://img.shields.io/badge/C%2B%2B-11%2F14%2F17-blue.svg)
+![](https://img.shields.io/badge/license-MIT-blue.svg)
+---
 
 ### Goals:
 
@@ -10,7 +15,7 @@
 
 ### Features:
 	
-* one header file (uses standard library)
+* lightweight (one header file, uses standard library)
 * information about tests: file name, line number and what was tested/failed
 * counting, grouping and merging tests
 * no need to: create objects, use scope, catch or throw exceptions
@@ -18,7 +23,6 @@
 * allows write tests in natural way, no need to build special constructions 
 * implementation has sparated logic from printing logs (allows to change output easily)
 * output to console by default
- 
 
 ### Requiements:
 
@@ -33,8 +37,8 @@
 void test_sub()
 {
     TEST_GROUP_FUNCTION;
-    TEST(1 - 1 == 1);    
-    TEST(1 - 2 == -1);    
+    TEST(1 - 1 == 1);
+    TEST(1 - 2 == -1);
 }
 
 int main()
@@ -48,11 +52,15 @@ int main()
         test_sub();
 
         TEST_GROUP("test_mul");
-        TEST(1 * 1 == 1);
-
+	TEST(0 * 1 == 0);
+	
         TEST_MERGE(true);
         TEST(1 * 2 == 2);
         TEST(2 * 1 == 1);
+
+        TEST_GROUP("other");
+        if (TEST_IF(1 * 1 == 1))
+            TEST(2 / (1 * 1) == 2);
 
         TEST_SUMMARY;
     }
@@ -314,6 +322,7 @@ int main()
 
 **sTest** is licensed under the MIT License, see LICENSE for more information.
 
+&nbsp;
 
 
 
