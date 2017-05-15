@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// sTest - unit testing framework for C++
+// sTest v 1.0 - unit testing framework for C++
 //-----------------------------------------------------------------------------
 
 // example of use:
@@ -24,11 +24,15 @@ int main()
         test_sub();
 
         TEST_GROUP("test_mul");
-        TEST(1 * 1 == 1);
+        TEST(0 * 1 == 0);
 
         TEST_MERGE(true);
         TEST(1 * 2 == 2);
         TEST(2 * 1 == 1);
+
+        TEST_GROUP("other");
+        if (TEST_IF(1 * 1 == 1))
+            TEST(2 / (1 * 1) == 2);
 
         TEST_SUMMARY;
     }
@@ -294,7 +298,7 @@ namespace _test
     template <typename T>
     void print_info()
     {
-        std::cout << "sTest v 1.0 "; 
+        std::cout << "sTest v 1.0 ";
         std::cout << "<console:text>\n";
         std::cout << std::endl;
     }
@@ -338,6 +342,7 @@ namespace _test
             std::cout << " -test count: " << testCunt;
         if (testWasSkipped)
             std::cout << "*";
+        std::cout << "\n";
         std::cout << std::endl;
     }
 
@@ -345,7 +350,7 @@ namespace _test
     template <typename T>
     void print_summary(long long totalFailedCount, long long totalCount, bool totalWasSkipped)
     {
-        std::cout << "\n==============================\n";
+        std::cout << "==============================\n";
         if (totalFailedCount == 0)
             std::cout << "All tests passed!\n";
         else
