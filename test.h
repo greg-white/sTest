@@ -1,5 +1,11 @@
+#pragma once
+
 //-----------------------------------------------------------------------------
-// sTest v 1.0 - unit testing framework for C++
+// sTest v 1.0 - unit testing framework for C++ 
+// 
+// Copyright (c) 2017 Gregory Wilk
+// Source: https://github.com/greg-white/sTest
+// License MIT
 //-----------------------------------------------------------------------------
 
 // example of use:
@@ -45,8 +51,8 @@ int main()
 */
 
 //-----------------------------------------------------------------------------
-
-#pragma once
+// main macros and includes
+//-----------------------------------------------------------------------------
 
 #if !defined(__cplusplus)
 #error C++ is required
@@ -56,13 +62,13 @@ int main()
 #include <cstdlib>  // used for exit(EXIT_FAILURE)
 
 // get source file name without path
-#if defined(_WIN32) && defined(_MSC_VER)
+#if defined(_WIN32)
 #define __FILENAME__        (std::strrchr(__FILE__, '\\') ? std::strrchr(__FILE__, '\\') + 1 : __FILE__)
 #else
 #define __FILENAME__        (std::strrchr(__FILE__, '/') ? std::strrchr(__FILE__, '/') + 1 : __FILE__)
 #endif
 
-// 
+// basics
 #define TEST(X)             _test::log<int>(_test::check, #X, __FILENAME__, __LINE__, (X))
 #define TEST_R(X)            if(!_test::log<int>(_test::check_skip, #X, __FILENAME__, __LINE__, (X))) return;
 #define TEST_IF(X)          _test::log<int>(_test::check_skip, #X, __FILENAME__, __LINE__, (X))
@@ -72,7 +78,7 @@ int main()
 #define TEST_SUMMARY        _test::log<int>(_test::summary)
 #define TEST_EXCEPTION      _test::log<int>(_test::exception)
 
-// aditional macros
+// aditional
 #define TEST_GROUP(X)       _test::log<int>(_test::begin_group, (X))
 #define TEST_GROUP_FUNCTION _test::log<int>(_test::begin_group, __func__)
 
@@ -84,6 +90,116 @@ int main()
 #define TEST_EXIT(X)        _test::log<int>(_test::do_exit, nullptr, nullptr, 0, (X))
 #define TEST_WAIT(X)        _test::log<int>(_test::do_wait, nullptr, nullptr, 0, (X))
 
+
+//-----------------------------------------------------------------------------
+// output
+//-----------------------------------------------------------------------------
+
+#include <iostream> // used for console output
+
+namespace _test
+{
+    template <typename T>
+    void print_info()
+    {
+        std::cout << "sTest v 1.0 ";
+        std::cout << "<console:text>\n";
+        std::cout << std::endl;
+    }
+
+
+    template <typename T>
+    void print_test_group(const char *name)
+    {
+        std::cout << name;
+        std::cout << std::endl;
+    }
+
+    // return ture if printed
+    template <typename T>
+    bool print_test_check(const char *what, const char *file, int line, bool passed, bool skip, bool merged)
+    {
+        if (!passed)
+        {
+            if (merged)
+                std::cout << "      failed!";
+            else
+                std::cout << " Test failed!";
+            std::cout << "   " << file;
+            std::cout << ":" << line;
+            std::cout << "   " << what;
+            if (skip)
+                std::cout << "\n -skipping next tests";
+            std::cout << std::endl;
+            return true;
+        }
+        return false;
+    }
+
+
+    template <typename T>
+    void print_group_status(long long testFailedCount, long long testCunt, bool testWasSkipped)
+    {
+        if (testFailedCount)
+            std::cout << " -failed: " << testFailedCount << " of " << testCunt;
+        else
+            std::cout << " -test count: " << testCunt;
+        if (testWasSkipped)
+            std::cout << "*";
+        std::cout << "\n";
+        std::cout << std::endl;
+    }
+
+
+    template <typename T>
+    void print_summary(long long totalFailedCount, long long totalCount, bool totalWasSkipped)
+    {
+        std::cout << "==============================\n";
+        if (totalFailedCount == 0)
+            std::cout << "All tests passed!\n";
+        else
+            std::cout << "Warning " << totalFailedCount << " tests failed!\n";
+        std::cout << "Test count: " << totalCount;
+        if (totalWasSkipped)
+            std::cout << "*\n*Some tests may be skipped.";
+        std::cout << std::endl;
+    }
+
+
+    template <typename T>
+    void print_exception(const char *lastFile, int lastLine)
+    {
+        std::cout << "\n==============================\n";
+        if (lastFile)
+        {
+            std::cout << "Exception afer test in: ";
+            std::cout << lastFile;
+            std::cout << ":" << lastLine;
+        }
+        else
+            std::cout << "Exception beafore anny test!";
+        std::cout << std::endl;
+    }
+
+
+    template <typename T>
+    void print_print(const char *txt)
+    {
+        std::cout << txt;
+        std::cout << std::endl;
+    }
+
+
+    template <typename T>
+    void wait()
+    {
+        std::cin.get();
+    }
+}
+
+//-----------------------------------------------------------------------------
+// test logic
+//-----------------------------------------------------------------------------
 
 namespace _test
 {
@@ -290,106 +406,4 @@ namespace _test
     }
 }
 
-
-#include <iostream> // used for console output
-
-namespace _test
-{
-    template <typename T>
-    void print_info()
-    {
-        std::cout << "sTest v 1.0 ";
-        std::cout << "<console:text>\n";
-        std::cout << std::endl;
-    }
-
-
-    template <typename T>
-    void print_test_group(const char *name)
-    {
-        std::cout << name;
-        std::cout << std::endl;
-    }
-
-    // terurn ture if printed
-    template <typename T>
-    bool print_test_check(const char *what, const char *file, int line, bool passed, bool skip, bool merged)
-    {
-        if (!passed)
-        {
-            if (merged)
-                std::cout << "      failed!";
-            else
-                std::cout << " Test failed!";
-            std::cout << "   " << file;
-            std::cout << ":" << line;
-            std::cout << "   " << what;
-            if (skip)
-                std::cout << "\n -skipping next tests";
-            std::cout << std::endl;
-            return true;
-        }
-        return false;
-    }
-
-
-    template <typename T>
-    void print_group_status(long long testFailedCount, long long testCunt, bool testWasSkipped)
-    {
-        if (testFailedCount)
-            std::cout << " -failed: " << testFailedCount << " of " << testCunt;
-        else
-            std::cout << " -test count: " << testCunt;
-        if (testWasSkipped)
-            std::cout << "*";
-        std::cout << "\n";
-        std::cout << std::endl;
-    }
-
-
-    template <typename T>
-    void print_summary(long long totalFailedCount, long long totalCount, bool totalWasSkipped)
-    {
-        std::cout << "==============================\n";
-        if (totalFailedCount == 0)
-            std::cout << "All tests passed!\n";
-        else
-            std::cout << "Warning " << totalFailedCount << " tests failed!\n";
-        std::cout << "Test count: " << totalCount;
-        if (totalWasSkipped)
-            std::cout << "*\n*Some tests may be skipped.";
-        std::cout << std::endl;
-    }
-
-
-    template <typename T>
-    void print_exception(const char *lastFile, int lastLine)
-    {
-        std::cout << "\n==============================\n";
-        if (lastFile)
-        {
-            std::cout << "Exception afer test in: ";
-            std::cout << lastFile;
-            std::cout << ":" << lastLine;
-        }
-        else
-            std::cout << "Exception beafore anny test!";
-        std::cout << std::endl;
-    }
-
-
-    template <typename T>
-    void print_print(const char *txt)
-    {
-        std::cout << txt;
-        std::cout << std::endl;
-    }
-
-
-    template <typename T>
-    void wait()
-    {
-        std::cin.get();
-    }
-}
 
