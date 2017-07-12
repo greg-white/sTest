@@ -1,7 +1,7 @@
 #pragma once
 
 //-----------------------------------------------------------------------------
-// sTest v 1.0 - unit testing framework for C++ 
+// sTest v 1.1 - unit testing framework for C++ 
 // 
 // Copyright (c) 2017 Gregory Wilk
 // Source: https://github.com/greg-white/sTest
@@ -68,26 +68,46 @@ int main()
 #define __FILENAME__        (std::strrchr(__FILE__, '/') ? std::strrchr(__FILE__, '/') + 1 : __FILE__)
 #endif
 
-// basics
+// main/basic test macro
 #define TEST(X)             _test::log<int>(_test::check, #X, __FILENAME__, __LINE__, (X))
+
+// return if test failed
 #define TEST_R(X)            if(!_test::log<int>(_test::check_skip, #X, __FILENAME__, __LINE__, (X))) return;
+
+// test in 'if' statement
 #define TEST_IF(X)          _test::log<int>(_test::check_skip, #X, __FILENAME__, __LINE__, (X))
 
+// merge tests into one
 #define TEST_MERGE(X)       _test::log<int>(_test::merge, nullptr, nullptr, 0, (X))
 
+// print summary of all tests
 #define TEST_SUMMARY        _test::log<int>(_test::summary)
+
+// summart for catch block after all tests
 #define TEST_EXCEPTION      _test::log<int>(_test::exception)
 
-// aditional
+// begin test group
 #define TEST_GROUP(X)       _test::log<int>(_test::begin_group, (X))
+
+// begin test group named as function
 #define TEST_GROUP_FUNCTION _test::log<int>(_test::begin_group, __func__)
 
+// begin test section
+#define TEST_SECTION(X)         _test::log<int>(_test::begin_section, (X))
+
+// begin test section named as function
+#define TEST_SECTION_FUNCTION   _test::log<int>(_test::begin_section, __func__)
+
+// custom print to output
 #define TEST_PRINT(X)       _test::log<int>(_test::print, (X))
 
+// true if any test has failed
 #define TEST_FAILED         _test::log<int>(_test::total_failed)
 
-// options
+// option: enable program exit in summary
 #define TEST_EXIT(X)        _test::log<int>(_test::do_exit, nullptr, nullptr, 0, (X))
+
+// option: wait for user input before exit
 #define TEST_WAIT(X)        _test::log<int>(_test::do_wait, nullptr, nullptr, 0, (X))
 
 
@@ -102,7 +122,7 @@ namespace _test
     template <typename T>
     void print_info()
     {
-        std::cout << "sTest v 1.0 ";
+        std::cout << "sTest v 1.1 ";
         std::cout << "<console:text>\n";
         std::cout << std::endl;
     }
@@ -112,6 +132,13 @@ namespace _test
     void print_test_group(const char *name)
     {
         std::cout << name;
+        std::cout << std::endl;
+    }
+
+    template <typename T>
+    void print_test_section(const char *name)
+    {
+        std::cout << '[' << name << "]\n";
         std::cout << std::endl;
     }
 
@@ -262,6 +289,7 @@ namespace _test
         summary,
         exception,
         begin_group,
+        begin_section,
         print,
         merge,
         total_failed,
@@ -283,7 +311,7 @@ namespace _test
 
         static Options options;
 
-        static bool hasTests = false;
+        static bool hasTestsOrGroup = false;
         static bool info = false;
 
         if (!info)
@@ -296,7 +324,7 @@ namespace _test
         {
             case LogType::check:
             case LogType::check_skip:
-                hasTests = true;
+                hasTestsOrGroup = true;
                 if (!isMerged || !merged.counted)
                 {
                     totalStatus.testCount++;
@@ -325,7 +353,7 @@ namespace _test
 
             case LogType::summary:
             {
-                if (hasTests)
+                if (hasTestsOrGroup)
                     print_group_status<T>(groupStatus.failedCount, groupStatus.testCount, groupStatus.hasSkipped);
                 print_summary<T>(totalStatus.failedCount, totalStatus.testCount, totalStatus.hasSkipped);
 
@@ -351,9 +379,26 @@ namespace _test
             case LogType::begin_group:
                 if (what)
                 {
-                    if (hasTests)
+                    if (hasTestsOrGroup)
                         print_group_status<T>(groupStatus.failedCount, groupStatus.testCount, groupStatus.hasSkipped);
                     print_test_group<T>(what);
+
+                    groupStatus.Clear();
+                    isMerged = false;
+                    merged.Clear();
+                    hasTestsOrGroup = true;
+                }               
+                break;
+
+            case LogType::begin_section:
+                if (what)
+                {
+                    if (hasTestsOrGroup)
+                    {
+                        print_group_status<T>(groupStatus.failedCount, groupStatus.testCount, groupStatus.hasSkipped);
+                        hasTestsOrGroup = false;
+                    }
+                    print_test_section<T>(what);
 
                     groupStatus.Clear();
                     isMerged = false;
