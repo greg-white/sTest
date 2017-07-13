@@ -1,6 +1,6 @@
 # sTest - The C++ unit testing framework.
 
-![](https://img.shields.io/badge/version-1.0-blue.svg)
+![](https://img.shields.io/badge/version-1.1-blue.svg)
 ![](https://img.shields.io/badge/language-C%2B%2B-blue.svg)
 ![](https://img.shields.io/badge/C%2B%2B-11%2F14%2F17-blue.svg)
 ![](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -45,6 +45,8 @@ int main()
 {
     try
     {
+    	TEST_SECTION("arithmetic");
+	
         TEST_GROUP("test_add");
         TEST(1 + 1 == 2);
         TEST(1 + 2 == 3);
@@ -81,7 +83,7 @@ int main()
 
 `X` - test expression
 
-This is basic testing command. It defines a test, converts `X` to `bool` ans checks if is `true`. When test fails it prints to the output: file name, line number and `X` as string. Passed and failed tests are also counted.
+This is main and basic testing command. It defines a test, converts `X` to `bool` ans checks if is `true`. When test fails it prints to the output: file name, line number and `X` as string. Passed and failed tests are also counted.
 
 Example:
 
@@ -149,16 +151,19 @@ TEST_MERGE(...
 
 ## Test grouping
 
+You can optionally divide your tests into gropups with own summaries. You can also split these groups into sections.
+
 ### `TEST_GROUP(X)`
 
 `X` - group name
 
 Create a test group named `X`. It also prints to the output summary of previous group (all and failed test count) and the name of the current group.
 
-* Group ends when a new one begins or program reach test summary commands.
+* Group ends when a new one begins, a section begins or program reach test summary commands.
 * Group summary is printed at the end of the group.
 * Groups can have same names.
 * There can be many groups in one scope.
+* When there are tests but no group is curently defined, test will be assigned to an unnamed group.
 
 Example:
 ```
@@ -180,6 +185,51 @@ void test_sub()
     TEST_GROUP_FUNCTION; // same as TEST_GROUP("test_sub");
     TEST(1 - 1 == 0);
     TEST(2 - 1 == 1);
+}
+```
+&nbsp;
+
+
+### `TEST_SECTION(X)`
+
+`X` - section name
+
+Create a test section named `X`. Sections are used to split test groups.
+
+* Section definition ends current group and prints its summary.
+* Section has not own summary (only name of the section will be printed).
+* Sections can have same names.
+* There can be many sections in one scope.
+
+Example:
+```
+TEST_SECTION("arithmetic");
+
+TEST_GROUP("test_add");
+TEST(1 + 1 == 2);
+TEST(1 + 2 == 3);
+
+test_sub();		// defines a test group
+
+TEST_SECTION("slist");
+test_push_pop();	// defines a test group
+test_reverse();		// defines a test group
+
+```
+&nbsp;
+
+
+### `TEST_SECTION_FUNCTION`
+
+Define new test section with name of current function.
+
+Example:
+```
+void test_string()
+{
+    TEST_SECTION_FUNCTION; // same as TEST_SECTION("test_string");
+    test_trim();
+    test_split();    
 }
 ```
 &nbsp;
