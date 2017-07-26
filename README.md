@@ -1,6 +1,6 @@
 # sTest - The C++ unit testing framework.
 
-![](https://img.shields.io/badge/version-1.1-blue.svg)
+![](https://img.shields.io/badge/version-1.2-blue.svg)
 ![](https://img.shields.io/badge/language-C%2B%2B-blue.svg)
 ![](https://img.shields.io/badge/C%2B%2B-11%2F14%2F17-blue.svg)
 ![](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -21,6 +21,7 @@
 * no need to: create objects, use scope, catch or throw exceptions
 * simple syntax, all commands started with `TEST_`
 * allows write tests in natural way, no need to build special constructions 
+* two testing modes: normal (all tests are counted, failed tests do not interrupt program) and assert mode (program will exit after first failed test)
 * implementation has separated logic from printing logs (allows to change output easily)
 * output to console by default
 
@@ -83,7 +84,7 @@ int main()
 
 `X` - test expression
 
-This is main and basic testing command. It defines a test, converts `X` to `bool` ans checks if is `true`. When test fails it prints to the output: file name, line number and `X` as string. Passed and failed tests are also counted.
+This is main and basic testing command. It defines a test, converts `X` to `bool` ans checks if is `true`. When test fails it prints to the output: file name, line number and `X` as string. Passed and failed tests are also counted. It also returns the result of the test.
 
 Example:
 
@@ -311,8 +312,6 @@ return TEST_FAILED;
 &nbsp;
 
 
-
-
 ## Options
 
 ### `TEST_EXIT(X)`
@@ -343,6 +342,22 @@ Example:
 TEST_WAIT(false);
 ```
 &nbsp;
+
+
+### `TEST_ASSERT_MODE(X)`
+
+`X` - `true` or `false`
+
+Enable or disable program exit after first failed test.
+
+By default is set to `false`
+
+Example:
+```
+TEST_ASSERT_MODE(true);
+```
+&nbsp;
+
 
 # Minimal setup
 
