@@ -1,7 +1,7 @@
 #pragma once
 
 //-----------------------------------------------------------------------------
-// sTest v 1.1 - unit testing framework for C++ 
+// sTest v 1.2 - unit testing framework for C++ 
 // 
 // Copyright (c) 2017 Gregory Wilk
 // Source: https://github.com/greg-white/sTest
@@ -23,6 +23,8 @@ int main()
 {
     try
     {
+        TEST_SECTION("arithmetic");
+
         TEST_GROUP("test_add");
         TEST(1 + 1 == 2);
         TEST(1 + 2 == 3);
@@ -110,6 +112,8 @@ int main()
 // option: wait for user input before exit
 #define TEST_WAIT(X)        _test::log<int>(_test::do_wait, nullptr, nullptr, 0, (X))
 
+// option: enable program exit after first failed test
+#define TEST_ASSERT_MODE(X) _test::log<int>(_test::assert_mode, nullptr, nullptr, 0, (X))
 
 //-----------------------------------------------------------------------------
 // output
@@ -122,7 +126,7 @@ namespace _test
     template <typename T>
     void print_info()
     {
-        std::cout << "sTest v 1.1 ";
+        std::cout << "sTest v 1.2 ";
         std::cout << "<console:text>\n";
         std::cout << std::endl;
     }
@@ -189,6 +193,16 @@ namespace _test
         std::cout << "Test count: " << totalCount;
         if (totalWasSkipped)
             std::cout << "*\n*Some tests may be skipped.";
+        std::cout << std::endl;
+    }
+
+
+    template <typename T>
+    void print_assert(long long totalCount)
+    {
+        std::cout << "\n==============================\n";
+        std::cout << "Assert mode, skipping next tests!\n";
+        std::cout << "Exiting after " << totalCount << " tests.";
         std::cout << std::endl;
     }
 
@@ -273,11 +287,13 @@ namespace _test
     {
         bool exitAtEnd;
         bool waitAtExit;
+        bool exitWhenFailed;
 
         Options()
         {
             exitAtEnd = true;
             waitAtExit = true;
+            exitWhenFailed = false;
         }
     };
 
@@ -295,6 +311,7 @@ namespace _test
         total_failed,
         do_exit,
         do_wait,
+        assert_mode
     };
 
 
@@ -349,6 +366,14 @@ namespace _test
                 }
 
                 merged.printed = print_test_check<T>(what, file, line, passed, type == LogType::check_skip, merged.printed) && isMerged;
+
+                if (!passed && options.exitWhenFailed)
+                {
+                    print_assert<T>(totalStatus.testCount);
+                    if (options.waitAtExit)
+                        wait<T>();
+                    exit(EXIT_FAILURE);
+                }
                 break;
 
             case LogType::summary:
@@ -441,6 +466,10 @@ namespace _test
 
             case LogType::do_wait:
                 options.waitAtExit = passed;
+                break;
+
+            case LogType::assert_mode:
+                options.exitWhenFailed = passed;
                 break;
 
             default:
