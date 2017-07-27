@@ -350,7 +350,7 @@ TEST_WAIT(false);
 
 Enable or disable program exit after first failed test.
 
-By default is set to `false`
+By default is set to `false`, so failed test do not interrupt testing - program will continue executing next tests.
 
 Example:
 ```
